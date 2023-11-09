@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Learn"
         tools:targetApi="31">
         <activity
+            android:name=".Find"
+            android:exported="false" />
+        <activity
             android:name=".PlayerSong"
             android:exported="false" />
         <activity

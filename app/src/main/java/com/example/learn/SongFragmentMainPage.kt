@@ -23,16 +23,13 @@ class SongFragmentMainPage : Fragment() {
             pauseImageView.setImageResource(R.drawable.pause)
         }
 
-        val bundle = this.arguments
-        if (bundle != null) {
-            val songItemStr = bundle.getString("songItem", "")
-            val songItem = Gson().fromJson(songItemStr, SongItem::class.java)
+        val songItem = MediaManager.getSong()
 
-            Glide.with(this)
-                .load("${com.example.learn.host}/api/songs/image/${songItem?.image}")
-                .error(R.drawable.error_image)
-                .into(headImageFragment)
-        }
+        Glide.with(this)
+            .load("${com.example.learn.host}/api/songs/image/${songItem.image}")
+            .error(R.drawable.error_image)
+            .into(headImageFragment)
+
 
         pauseImageView.setOnClickListener {
             if (MediaManager.mediaPlayer.isPlaying){

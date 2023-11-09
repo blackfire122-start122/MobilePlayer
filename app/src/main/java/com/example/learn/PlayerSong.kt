@@ -89,7 +89,7 @@ class PlayerSong() : AppCompatActivity() {
             .error(R.drawable.error_image)
             .into(imageSong)
 
-        songItem?.fileSong?.let { MediaManager.play(it) }
+        songItem?.let { MediaManager.play(it) }
         seekBar.max = MediaManager.mediaPlayer.duration
     }
 
@@ -99,8 +99,6 @@ class PlayerSong() : AppCompatActivity() {
 
     private fun handleSystemBackButton() {
         val intent = Intent()
-        val songItemStr = Gson().toJson(songItem)
-        intent.putExtra("songItem", songItemStr)
         setResult(RESULT_OK,intent)
         finish()
     }

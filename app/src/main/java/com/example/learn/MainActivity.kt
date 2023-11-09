@@ -5,9 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,16 +21,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
-interface ApiService {
-    @GET("/api/getListenAgainSongs/")
-    fun getSongs(): Call<List<SongItem>>
-}
-
 const val host = "http://192.168.0.105:8080"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var gridListenAgain: GridLayout
-
+    private var areSongFragment :Boolean = false
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +35,9 @@ class MainActivity : AppCompatActivity() {
         val avatar = findViewById<ImageView>(R.id.avatar)
 
         search.setOnClickListener {
-//            val intent = Intent(this, FindSong::class.java)
-//            val songItemStr = Gson().toJson(songItem)
-//            intent.putExtra("songItem", songItemStr)
-//            startActivityForResult(intent,1)
+            val intent = Intent(this, Find::class.java)
+            intent.putExtra("areSongFragment", areSongFragment)
+            startActivity(intent)
         }
 
         avatar.setOnClickListener {
@@ -130,25 +122,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (data==null){
-            return
-        }
-
-        val songItemStr = data.getStringExtra("songItem")
-        if (songItemStr != null) {
-            val songItem = Gson().fromJson(songItemStr, SongItem::class.java)
-            showFragment(songItem)
-        }
+        showFragment()
+        areSongFragment = true
     }
 
-    private fun showFragment(songItem:SongItem) {
+    private fun showFragment() {
         val transaction = supportFragmentManager.beginTransaction()
         val fragment = SongFragmentMainPage()
-
-        val bundle = Bundle()
-        val songItemStr = Gson().toJson(songItem)
-        bundle.putString("songItem", songItemStr)
-        fragment.arguments = bundle
 
         transaction.replace(R.id.songFragment, fragment)
         transaction.addToBackStack(null)
