@@ -11,11 +11,15 @@ import android.widget.SeekBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import androidx.appcompat.widget.PopupMenu
 
-class PlayerSong() : AppCompatActivity() {
+class PlayerSong() : AppCompatActivity(), WebSocketClient.WebSocketListenerInterface{
     @SuppressLint("MissingInflatedId")
     private var songItem: SongItem? = null
+    private lateinit var popupMenu: PopupMenu
+    private val webSocketClient = WebSocketClient(this)
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player_song)
@@ -29,10 +33,13 @@ class PlayerSong() : AppCompatActivity() {
         val backButton = findViewById<ImageButton>(R.id.backButton)
         val forwardButton = findViewById<ImageButton>(R.id.forwardButon)
         val playPauseButton = findViewById<ImageButton>(R.id.playPauseButton)
+        val addFriend = findViewById<ImageView>(R.id.addFriend)
 
         val back = findViewById<ImageView>(R.id.back)
 
         val seekBar = findViewById<SeekBar>(R.id.seekBar)
+
+        popupMenu = PopupMenu(this, addFriend)
 
         songItem = Gson().fromJson(songItemStr, SongItem::class.java)
         textViewNameSong.text = songItem?.name ?: "No name"
@@ -55,9 +62,13 @@ class PlayerSong() : AppCompatActivity() {
             if (MediaManager.mediaPlayer.isPlaying){
                 MediaManager.mediaPlayer.pause()
                 playPauseButton.setImageResource(R.drawable.play)
+                val messagePause = Message.StringMessage("pause","")
+                webSocketClient.sendMessage(Gson().toJson(messagePause))
             }else{
                 MediaManager.mediaPlayer.start()
                 playPauseButton.setImageResource(R.drawable.pause)
+                val messagePlay = Message.StringMessage("play","")
+                webSocketClient.sendMessage(Gson().toJson(messagePlay))
             }
         }
 
@@ -71,6 +82,11 @@ class PlayerSong() : AppCompatActivity() {
 
         forwardButton.setOnClickListener {
 
+        }
+
+        addFriend.setOnClickListener {
+            webSocketClient.sendMessage(Gson().toJson(Message.StringMessage("getFriendsOnline", "")))
+            popupMenu.show()
         }
 
         val handler = Handler()
@@ -101,5 +117,29 @@ class PlayerSong() : AppCompatActivity() {
         val intent = Intent()
         setResult(RESULT_OK,intent)
         finish()
+    }
+
+
+    override fun onConnected() {
+
+    }
+
+    override fun onResponse(data: Message) {
+        when (data) {
+            is Message.OnlineUsers -> {
+                if (data.type=="OnlineUsers"){
+                    for (user in data.content){
+                        popupMenu.menu.add(user.roomId)
+                    }
+                }
+            }
+            is Message.StringMessage -> {
+
+            }
+        }
+    }
+
+    override fun onClosed() {
+
     }
 }

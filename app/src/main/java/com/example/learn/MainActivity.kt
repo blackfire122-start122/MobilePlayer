@@ -3,6 +3,7 @@ package com.example.learn
 import android.R.attr.value
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
@@ -19,7 +20,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
 
 const val host = "http://192.168.0.105:8080"
 
@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         nameTextView.setPadding(16, 8, 16, 8)
         nameTextView.textSize = 25F
         nameTextView.gravity = Gravity.CENTER
+        nameTextView.setTextColor(Color.parseColor("#FFFFFF"))
 
         songItemLayout.addView(imageView)
         songItemLayout.addView(nameTextView)

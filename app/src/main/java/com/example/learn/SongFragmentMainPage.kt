@@ -35,9 +35,13 @@ class SongFragmentMainPage : Fragment() {
             if (MediaManager.mediaPlayer.isPlaying){
                 MediaManager.mediaPlayer.pause()
                 pauseImageView.setImageResource(R.drawable.play)
+//                val messagePause = Message.StringMessage("pause","")
+//                webSocketClient.sendMessage(Gson().toJson(messagePause))
             }else{
                 MediaManager.mediaPlayer.start()
                 pauseImageView.setImageResource(R.drawable.pause)
+//                val messagePlay = Message.StringMessage("play","")
+//                webSocketClient.sendMessage(Gson().toJson(messagePlay))
             }
         }
 
