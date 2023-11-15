@@ -1,6 +1,5 @@
 package com.example.learn
 
-import android.R.attr.value
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
@@ -15,6 +14,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
 import androidx.gridlayout.widget.GridLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import retrofit2.Call
@@ -31,35 +31,47 @@ class MainActivity : AppCompatActivity() {
     private lateinit var avatar: ImageView
     private var areSongFragment :Boolean = false
     private lateinit var user :User
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(host)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val apiServiceListenAgainSongs: ApiServiceListenAgainSongs = retrofit.create(ApiServiceListenAgainSongs::class.java)
+    private val apiServiceTop: ApiServiceTop = retrofit.create(ApiServiceTop::class.java)
+    private val apiServiceGetUser: ApiServiceGetUser = retrofit.create(ApiServiceGetUser::class.java)
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val search = findViewById<ImageView>(R.id.search)
-        avatar = findViewById(R.id.avatar)
-
         search.setOnClickListener {
             val intent = Intent(this, Find::class.java)
             intent.putExtra("areSongFragment", areSongFragment)
             startActivity(intent)
         }
 
+        gridListenAgain = findViewById(R.id.gridListenAgain)
+        linearSongTop = findViewById(R.id.linearSongTop)
+        avatar = findViewById(R.id.avatar)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+
         avatar.setOnClickListener {
 
         }
 
-        gridListenAgain = findViewById(R.id.gridListenAgain)
-        linearSongTop = findViewById(R.id.linearSongTop)
+        swipeRefreshLayout.setOnRefreshListener {
+            fetchData()
+        }
+        fetchData()
+    }
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(host)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiServiceListenAgainSongs = retrofit.create(ApiServiceListenAgainSongs::class.java)
-        val apiServiceTop = retrofit.create(ApiServiceTop::class.java)
-        val apiServiceGetUser = retrofit.create(ApiServiceGetUser::class.java)
+    private fun fetchData() {
+        gridListenAgain.removeAllViews()
+        linearSongTop.removeAllViews()
 
         apiServiceListenAgainSongs.getSongs().enqueue(object : Callback<List<SongItem>> {
             override fun onResponse(call: Call<List<SongItem>>, response: Response<List<SongItem>>) {
@@ -107,6 +119,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun loadUserImage(user: User) {
@@ -119,7 +132,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ResourceAsColor")
     private fun addSongToLinearLayout(songItem: SongItem) {
-        println(songItem)
         val songItemLayout = LinearLayout(this)
         songItemLayout.orientation = LinearLayout.VERTICAL
 
