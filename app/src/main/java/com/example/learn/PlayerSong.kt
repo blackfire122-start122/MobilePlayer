@@ -129,7 +129,7 @@ class PlayerSong() : AppCompatActivity(), WebSocketClient.WebSocketListenerInter
             is Message.OnlineUsers -> {
                 if (data.type=="OnlineUsers"){
                     for (user in data.content){
-                        popupMenu.menu.add(user.roomId)
+                        popupMenu.menu.add(user.username)
                     }
                 }
             }

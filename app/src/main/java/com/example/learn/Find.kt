@@ -5,8 +5,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -35,6 +37,9 @@ class Find : AppCompatActivity() {
         if (areSongFragment){
             val fragment = SongFragmentMainPage()
             val transaction = supportFragmentManager.beginTransaction()
+
+            val songFragment = findViewById<FrameLayout>(R.id.songFragment)
+            songFragment.visibility = View.VISIBLE
 
             transaction.replace(R.id.songFragment, fragment)
             transaction.addToBackStack(null)
